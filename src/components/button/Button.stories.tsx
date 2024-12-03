@@ -1,27 +1,30 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react'; // Импорт типов для Storybook
+import { Button } from './Button'; // Импорт компонента Button
 
-import { Button } from './Button';
-
+// Метаданные для компонента Button
 const meta: Meta<typeof Button> = {
-	component: Button,
+	component: Button, // Определяем, что будем работать с компонентом Button
 };
 
-export default meta;
-type Story = StoryObj<typeof Button>;
+export default meta; // Экспортируем метаданные по умолчанию
+type Story = StoryObj<typeof Button>; // Тип для истории Storybook
 
+// История для компонента Button
 export const ButtonStory: Story = {
 	render: () => {
 		return (
 			<>
+				{/* Кнопка "Сбросить" с обработчиком клика */}
 				<Button
-					title='Сбросить'
-					type='reset'
-					onClick={() => alert('клик на кнопку сбросить')}
+					title='Сбросить' // Текст на кнопке
+					type='reset' // Тип кнопки HTML
+					onClick={() => alert('Клик на кнопку сбросить')} // Действие при клике
 				/>
+				{/* Кнопка "Применить" с обработчиком клика */}
 				<Button
-					title='Применить'
-					type='submit'
-					onClick={() => alert('клик на кнопку применить')}
+					title='Применить' // Текст на кнопке
+					type='submit' // Тип кнопки HTML
+					onClick={() => alert('Клик на кнопку применить')} // Действие при клике
 				/>
 			</>
 		);

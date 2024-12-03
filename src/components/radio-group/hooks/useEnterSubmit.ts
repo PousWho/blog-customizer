@@ -1,30 +1,33 @@
 import { useEffect, useRef } from 'react';
-import { OptionType } from 'src/constants/articleProps';
+import { OptionType } from 'src/constants/articleProps'; // Тип для опции
 
+// Типы пропсов для хука
 type UseEnterSubmit = {
-	onChange?: (option: OptionType) => void;
-	option: OptionType;
+	onChange?: (option: OptionType) => void; // Коллбэк для обработки изменения
+	option: OptionType; // Текущая опция
 };
 
+// Хук для обработки нажатия клавиши Enter
 export const useEnterSubmit = ({ onChange, option }: UseEnterSubmit) => {
-	const optionRef = useRef<HTMLDivElement>(null);
+	const optionRef = useRef<HTMLDivElement>(null); // Ссылка на HTML-элемент
 
 	useEffect(() => {
-		const optionHtml = optionRef.current;
+		const optionHtml = optionRef.current; // Получаем текущий элемент
+		if (!optionHtml) return; // Если элемента нет, выходим из функции
 
-		if (!optionHtml) return;
-
+		// Обработчик нажатия клавиши Enter
 		const handleEnterKeyDown = (event: KeyboardEvent) => {
 			if (document.activeElement === optionHtml && event.key === 'Enter') {
-				onChange?.(option);
+				onChange?.(option); // Вызываем переданный коллбэк с текущей опцией
 			}
 		};
 
+		// Добавляем обработчик события keydown
 		optionHtml.addEventListener('keydown', handleEnterKeyDown);
 
-		// не забываем удалять листенеры, при размонтировании компонента
+		// Удаляем обработчик при размонтировании компонента
 		return () => {
 			optionHtml.removeEventListener('keydown', handleEnterKeyDown);
 		};
-	}, [onChange, option]);
+	}, [onChange, option]); // Следим за изменениями onChange и option
 };

@@ -28,36 +28,38 @@ export const ArticleParamsForm = ({
 	articleState,
 	setArticleState,
 }: ArticleParamsFormProps) => {
-	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false); // Состояние для отображения меню
 	const [formState, setFormState] = useState({
-		// это наши данные CSS состояние которые будут изменяться, сейчас это сток контент
-		fontFamily: articleState.fontFamilyOption, // Шрифты
-		fontSize: articleState.fontSizeOption, // Размер текста
-		fontColor: articleState.fontColor, // Цвет текста
-		backgroundColor: articleState.backgroundColor, // Цвет фона
-		contentWidth: articleState.contentWidth, // размер контейнера
+		fontFamily: articleState.fontFamilyOption, // Текущий шрифт
+		fontSize: articleState.fontSizeOption, // Текущий размер шрифта
+		fontColor: articleState.fontColor, // Текущий цвет текста
+		backgroundColor: articleState.backgroundColor, // Текущий цвет фона
+		contentWidth: articleState.contentWidth, // Текущая ширина контента
 	});
 
-	const rootRef = useRef<HTMLElement | null>(null);
-	const formRef = useRef<HTMLFormElement>(null);
+	const rootRef = useRef<HTMLElement | null>(null); // Ссылка на корневой элемент меню
+	const formRef = useRef<HTMLFormElement>(null); // Ссылка на форму
 
+	// Закрытие меню при клике вне его области
 	useOutsideClickClose({
 		isMenuOpen,
 		rootRef,
-		onClose: () => setIsMenuOpen(false),
-		onChange: setIsMenuOpen,
+		onClose: () => setIsMenuOpen(false), // Закрытие меню
+		onChange: setIsMenuOpen, // Изменение состояния меню
 	});
 
+	// Закрытие меню с помощью кастомного хука
 	useClose({
-		isMenuOpen: isMenuOpen,
-		onClose: () => setIsMenuOpen(false),
-		rootRef: formRef,
+		isMenuOpen,
+		onClose: () => setIsMenuOpen(false), // Закрытие меню
+		rootRef: formRef, // Привязка к форме
 	});
 
-	// если мы нажем на кнопку изменить параметры, то сможем поменять CSS структуру проекта
+	// Обработчик отправки формы (сохранение параметров)
 	const formSubmitHandler = (evt: FormEvent) => {
 		evt.preventDefault();
 
+		// Обновление состояния статьи с текущими параметрами формы
 		setArticleState({
 			...formState,
 			fontFamilyOption: formState.fontFamily,
@@ -67,102 +69,108 @@ export const ArticleParamsForm = ({
 			contentWidth: formState.contentWidth,
 		});
 
-		setIsMenuOpen(!isMenuOpen);
+		setIsMenuOpen(false); // Закрытие меню после сохранения
 	};
 
-	// если мы нажем на кнопку восстановить параметры, то сток CSS контейнер подгрузит стоковые состояния
+	// Обработчик сброса формы (восстановление стандартных параметров)
 	const formResetHandler = () => {
-		setFormState((prevState) => ({
-			...prevState,
+		setFormState({
 			fontFamily: defaultArticleState.fontFamilyOption,
 			fontSize: defaultArticleState.fontSizeOption,
 			fontColor: defaultArticleState.fontColor,
 			backgroundColor: defaultArticleState.backgroundColor,
 			contentWidth: defaultArticleState.contentWidth,
-		}));
+		});
 
-		setArticleState(defaultArticleState);
+		setArticleState(defaultArticleState); // Сброс состояния статьи к значениям по умолчанию
 	};
 
 	return (
-		// это форма в которой мы изменяем стиль нашего контента
 		<>
-			<ArrowButton onClick={setIsMenuOpen} isMenuOpen={isMenuOpen} />
+			{/* Кнопка для открытия/закрытия меню */}
+			<ArrowButton
+				onClick={() => setIsMenuOpen(!isMenuOpen)}
+				isMenuOpen={isMenuOpen}
+			/>
 			<aside
 				className={clsx(styles.container, isMenuOpen && styles.container_open)}
 				ref={rootRef}>
+				{/* Форма изменения параметров статьи */}
 				<form
 					className={styles.form}
-					onSubmit={formSubmitHandler} // изменение состояние
-					onReset={formResetHandler} // сток состояние
+					onSubmit={formSubmitHandler} // Сохранение изменений
+					onReset={formResetHandler} // Сброс параметров
 					ref={formRef}>
-					<Text as={'h2'} size={31} weight={800} uppercase={true}>
+					{/* Заголовок формы */}
+					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
+					{/* Выпадающий список выбора шрифта */}
 					<Select
 						title='Шрифт'
 						selected={formState.fontFamily}
 						options={fontFamilyOptions}
 						onChange={(selectedOption) =>
 							setFormState((prevState) => ({
-								// при выборе шрифта меняем fontFamily в state
 								...prevState,
-								fontFamily: selectedOption,
+								fontFamily: selectedOption, // Обновление шрифта
 							}))
 						}
 					/>
+					{/* Радио-группа выбора размера шрифта */}
 					<RadioGroup
 						options={fontSizeOptions}
 						selected={formState.fontSize}
 						title='Размер шрифта'
-						name='Размер шрифта'
+						name='fontSize'
 						onChange={(selectedOption) =>
 							setFormState((prevState) => ({
-								// при выборе шрифта меняем fontSize в state
 								...prevState,
-								fontSize: selectedOption,
+								fontSize: selectedOption, // Обновление размера шрифта
 							}))
 						}
 					/>
+					{/* Выпадающий список выбора цвета шрифта */}
 					<Select
 						options={fontColors}
 						selected={formState.fontColor}
 						title='Цвет шрифта'
 						onChange={(selectedOption) =>
 							setFormState((prevState) => ({
-								// при выборе шрифта меняем fontColor в state
 								...prevState,
-								fontColor: selectedOption,
+								fontColor: selectedOption, // Обновление цвета текста
 							}))
 						}
 					/>
 					<Separator />
+					{/* Выпадающий список выбора цвета фона */}
 					<Select
 						options={backgroundColors}
 						selected={formState.backgroundColor}
 						title='Цвет фона'
 						onChange={(selectedOption) =>
 							setFormState((prevState) => ({
-								// при выборе шрифта меняем backgroundColor в state
 								...prevState,
-								backgroundColor: selectedOption,
+								backgroundColor: selectedOption, // Обновление цвета фона
 							}))
 						}
 					/>
+					{/* Выпадающий список выбора ширины контента */}
 					<Select
 						options={contentWidthArr}
 						selected={formState.contentWidth}
 						title='Ширина контента'
 						onChange={(selectedOption) =>
 							setFormState((prevState) => ({
-								// при выборе шрифта меняем contentWidth в state
 								...prevState,
-								contentWidth: selectedOption,
+								contentWidth: selectedOption, // Обновление ширины контента
 							}))
 						}
 					/>
 					<div className={styles.bottomContainer}>
+						{/* Кнопка сброса параметров */}
 						<Button title='Сбросить' type='reset' />
+						{/* Кнопка сохранения изменений */}
 						<Button title='Применить' type='submit' />
 					</div>
 				</form>
